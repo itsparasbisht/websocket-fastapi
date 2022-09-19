@@ -11,7 +11,7 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         try:
             data = await websocket.receive_text()
-            await websocket.send_text(f"Sending from server")
+            await websocket.send_text(data)
             print(data)
         except:
             break
