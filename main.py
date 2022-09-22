@@ -11,8 +11,12 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         try:
             data = await websocket.receive_text()
-            await websocket.send_text(data)
             print(data)
+            if data == "connected":
+                print("connected to frontend")
+            
+            else:
+                await websocket.send_text(data)
         except:
             break
 
