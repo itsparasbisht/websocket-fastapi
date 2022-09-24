@@ -7,9 +7,12 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
 
-    async def connect(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket, client):
         await websocket.accept()
         self.active_connections.append(websocket)
+
+        for connection in self.active_connections:
+            await connection.send_text(client)
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
@@ -19,17 +22,16 @@ class ConnectionManager:
 
     async def broadcast(self, message):
         for connection in self.active_connections:
-            await connection.send_text(message)
+            await connection.send_json(message)
 
 manager = ConnectionManager()
 
 @app.websocket("/ws/{client}")
 async def websocket_endpoint(websocket: WebSocket, client: str):
-    await manager.connect(websocket)
+    await manager.connect(websocket, client)
     try:
         while True:
-            data = await websocket.receive_text()
-            # await manager.send_personal_message(f"You wrote: {data}", websocket)
+            data = await websocket.receive_json()
             await manager.broadcast(data)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
