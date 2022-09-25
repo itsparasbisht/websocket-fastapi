@@ -23,6 +23,10 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+@app.get("/")
+def root():
+    return {"message": "initial route for chat-websocket"}
+
 @app.websocket("/ws/{client}/{id}")
 async def websocket_endpoint(websocket: WebSocket, client: str, id):
     await manager.connect(websocket)
