@@ -23,10 +23,11 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-@app.websocket("/ws/{client}")
-async def websocket_endpoint(websocket: WebSocket, client: str):
+@app.websocket("/ws/{client}/{id}")
+async def websocket_endpoint(websocket: WebSocket, client: str, id):
     await manager.connect(websocket)
     joinedDict = {
+        "info": True,
         "joined" : True,
         "message" :  f'"{client.upper()} has joined the chat"'
     }
@@ -39,6 +40,7 @@ async def websocket_endpoint(websocket: WebSocket, client: str):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         leftDict = {
+            "info": True,
             "left" : True,
             "message" :  f'"{client.upper()} left the chat"'
         }
